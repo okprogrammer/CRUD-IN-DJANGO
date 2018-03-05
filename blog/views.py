@@ -36,8 +36,8 @@ def post_model_create_view(request):
     template = 'create-view.html'
     return render(request,template,context)
 
-def post_model_update_view(request):
-    obj =get_object_or_404( PostModel,id=id)
+def post_model_update_view(request,id=None):
+    obj =get_object_or_404(PostModel,id=id)
 
     ''' if request.method =='POST':
         print(request.POST) '''
@@ -51,8 +51,8 @@ def post_model_update_view(request):
         obj.save()
         messages.success(request, 'Updated has been done!')
         return HttpResponseRedirect('/blog/{num}'.format(num=obj.id)) 
-    template = 'update-view.html'
-    return render(request,template,context)
+    template_path = 'update-view.html'
+    return render(request,template_path,context)
     
 
 def post_model_detail_view(request,id=None):
@@ -63,16 +63,29 @@ def post_model_detail_view(request,id=None):
     template_path='detail-view.html'
     return render(request,template_path,context)
 
+def post_model_delete_view(request,id=None):
+    obj =get_object_or_404( PostModel,id=id)
+    if request.method == 'POST':
+        obj.delete()
+        messages.success(request,'Post deleted')
+        return HttpResponseRedirect('/blog/')
+    
+    context = {
+        'object':obj,
+    }
+    template_path='delete-view.html'
+    return render(request,template_path,context)
 
 
-@login_required
+
+#@login_required
 def post_model_list_view(request):
     print(request.user)
     if request.user.is_authenticated():
         template_path='list-view.html'
     else:
         template_path='list-view-public.html'
-        raise Http404
+        #raise Http404
     qs=PostModel.objects.all()
     print(qs)
     #return HttpResponse("some data"):
